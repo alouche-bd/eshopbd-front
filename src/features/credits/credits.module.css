@@ -1,0 +1,65 @@
+.title {
+    margin-bottom: 3rem;
+    margin-top: 3rem;
+    text-align: center;
+    width: 100%;
+}
+
+.gridContainer {
+    height: 60vh;
+    width: 100%;
+    background: white;
+}
+
+.MuiDataGrid-root .MuiDataGrid-columnHeaderTitle {
+    font-weight: bold;
+}
+
+.delivered,
+.notDelivered,
+.unknown {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.creditSold {
+    padding: inherit;
+}
+
+.delivered svg {
+    color: #1ba9aa;
+}
+
+.help {
+    border: solid 1px black;
+    padding: 25px;
+    width: 50%;
+    margin: auto;
+    text-align: center;
+}
+
+.help svg {
+    vertical-align: middle;
+}
+
+.contactLink {
+    color: inherit;
+    text-decoration: none;
+}
+
+.contactDiv {
+    padding-bottom: 15px;
+}
+
+.contactContainer {
+    margin-bottom: 2rem;
+}
+
+.notDelivered svg {
+    color: orange;
+}
+
+.unknown svg {
+    color: lightgrey;
+}

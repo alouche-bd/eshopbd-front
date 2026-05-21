@@ -1,0 +1,113 @@
+.cartTableRow {
+    padding: 3px 6px;
+    text-align: left;
+    width: 100%;
+
+    background: #f9f9f9;
+    border-bottom: solid 2px white;
+}
+
+.blockImg {
+    /* padding: 10px; */
+    max-width: 80px;
+    height: 60px;
+    /* margin: auto; */
+    background-color: #eeedf0;
+    position: relative;
+    vertical-align: top;
+    margin-right: 5px;
+}
+
+.blockImg img {
+    display: block;
+    height: 96%;
+    max-width: 80px;
+    margin: auto;
+}
+
+.ref {
+    hyphens: auto;
+    margin: 0;
+    word-wrap: break-word;
+}
+
+.productDesignation {
+    color: black;
+    font-size: 13px;
+    padding-bottom: 10px;
+    margin-bottom: 0;
+}
+
+.warning {
+    font-size: 18px;
+    color: orange;
+}
+
+.colorRed {
+    color: red;
+}
+
+.stockAlert {
+    font-size: smaller;
+    padding-top: 5px;
+    text-align: center;
+}
+
+.stockAlert svg {
+    vertical-align: middle;
+    position: relative;
+    right: 5px;
+    bottom: 2px;
+}
+
+.txtCenter {
+    text-align: center;
+}
+
+.txtLeft {
+    text-align: left !important;
+    padding-left: 3px;
+}
+
+.pd-lt-3 {
+    padding-left: 3px;
+}
+
+.customInput {
+    display: block;
+    width: 100%;
+    /* align-items: center; */
+}
+
+.commentField input {
+    width: 100%;
+}
+
+.deleteButton {
+    outline: none;
+    background: transparent;
+    border: none;
+}
+
+.containerCatalog {
+    display: flex;
+}
+
+.catalog {
+    font-size: 12px;
+    font-style: italic;
+    color: gray;
+    margin-right: 4px;
+}
+
+.addRowLda {
+    background: black;
+    color: white;
+    margin: 10px;
+    padding: 2px;
+}
+
+.txtEnd {
+    text-align: end;
+    width: 100%;
+}

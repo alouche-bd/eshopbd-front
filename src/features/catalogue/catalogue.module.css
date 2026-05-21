@@ -1,0 +1,13 @@
+.noResult {
+    width: 100%;
+    text-align: center;
+}
+
+.noResult svg {
+    vertical-align: bottom;
+}
+
+.catalogue {
+    padding-bottom: 35px;
+    color: #1ba9aa;
+}

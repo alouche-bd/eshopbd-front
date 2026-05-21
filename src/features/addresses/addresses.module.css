@@ -1,0 +1,43 @@
+.addressCardTitle {
+    text-transform: uppercase;
+}
+
+.title {
+    margin-bottom: 3rem;
+    margin-top: 3rem;
+    text-align: center;
+    width: 100%;
+}
+
+.subTitle {
+    margin-bottom: 2rem;
+    margin-top: 3rem;
+    text-align: center;
+    width: 100%;
+}
+
+.topRow,
+.bottomRow {
+    margin-bottom: 3rem;
+}
+
+.noResult {
+    width: 100%;
+    text-align: center;
+}
+
+.noResult svg {
+    vertical-align: bottom;
+}
+
+.goBack {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 1rem 0 0 3rem;
+    cursor: pointer;
+}
+
+.goBack svg {
+    vertical-align: middle;
+}

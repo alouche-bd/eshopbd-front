@@ -1,0 +1,45 @@
+.title {
+    margin-bottom: 3rem;
+    margin-top: 3rem;
+    text-align: center;
+    width: 100%;
+}
+
+.gridContainer {
+    height: 60vh;
+    width: 100%;
+    background: white;
+}
+
+.MuiDataGrid-root .MuiDataGrid-columnHeaderTitle {
+    font-weight: bold;
+}
+
+.delivered,
+.notDelivered,
+.unknown {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.delivered svg {
+    color: #1ba9aa;
+}
+
+.noResult {
+    width: 100%;
+    text-align: center;
+}
+
+.noResult svg {
+    vertical-align: bottom;
+}
+
+.notDelivered svg {
+    color: orange;
+}
+
+.unknown svg {
+    color: lightgrey;
+}

@@ -1,0 +1,8 @@
+.cartTableRow {
+    padding: 4px 6px 0px 6px;
+    text-align: left;
+    width: 100%;
+
+    background: #f9f9f9;
+    border-bottom: solid 2px white;
+}

@@ -1,0 +1,142 @@
+.itemRef {
+    padding: 15px;
+    font-weight: bold;
+}
+
+.topRow {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+    align-content: flex-start;
+}
+
+.topRow button {
+    margin-top: 0;
+}
+
+.title {
+    margin-bottom: 5rem;
+    margin-top: 5rem;
+    text-align: center;
+    width: 100%;
+}
+
+.stockAlert {
+    font-size: smaller;
+    padding-top: 5px;
+    text-align: center;
+}
+
+.stockAlert svg {
+    vertical-align: middle;
+}
+
+.image {
+    display: block;
+    position: relative;
+    width: 80px;
+    height: 80px;
+    background-color: #eeedf0;
+}
+
+.image img {
+    position: absolute;
+    bottom: 0;
+    display: block;
+    max-height: 90%;
+    margin: auto;
+    max-width: 90%;
+    top: 0;
+    left: 0;
+    right: 0;
+}
+
+.deleteButton {
+    outline: none;
+    background: transparent;
+    border: none;
+}
+
+.productDesignation {
+    color: black;
+    font-size: 13px;
+    font-weight: bold;
+    padding-bottom: 10px;
+    margin-bottom: 0;
+}
+
+.ref {
+    hyphens: auto;
+    margin: 5px 0;
+    word-wrap: break-word;
+}
+
+.deleteButton {
+    outline: none;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    color: #9d9d9c;
+}
+
+.listWrapper,
+.productWrapper {
+    padding: 20px;
+}
+
+.displayNone {
+    display: none;
+}
+
+.price {
+    font-weight: normal;
+}
+
+.addWishlistIcon svg {
+    z-index: 100;
+}
+
+.contactDiv svg,
+.goBack svg {
+    vertical-align: middle;
+}
+
+.cartTableHeader {
+    border-bottom: 1px solid rgba(112, 112, 112, 0.2);
+    padding: 20px 0;
+    text-align: center;
+}
+
+.cartTableRow {
+    padding: 20px 0;
+    text-align: center;
+}
+
+.total {
+    text-align: center;
+}
+
+.cartTotalContainer {
+    padding: 20px 0;
+    border-top: 1px solid rgba(112, 112, 112, 0.2);
+    font-weight: bold;
+}
+
+.totalNote {
+    font-style: italic;
+    font-size: smaller;
+    margin-top: 3rem;
+}
+
+.goBack {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    cursor: pointer;
+    padding: 1rem 0 0 3rem;
+}
+
+.goBack svg {
+    vertical-align: middle;
+}

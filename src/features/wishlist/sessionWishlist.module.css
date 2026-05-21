@@ -1,0 +1,18 @@
+.title {
+    margin-bottom: 3rem;
+    margin-top: 4rem;
+    text-align: start;
+    width: 100%;
+}
+
+.goBack {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 1rem 0 0 3rem;
+    cursor: pointer;
+}
+
+.goBack svg {
+    vertical-align: middle;
+}

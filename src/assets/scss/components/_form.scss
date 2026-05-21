@@ -1,0 +1,155 @@
+/*=============================================
+=            form            =
+=============================================*/
+
+.lezada-form {
+  form {
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    textarea {
+      background: #fff none repeat scroll 0 0;
+      border: medium none transparent;
+      border-radius: 0;
+      box-shadow: none;
+      color: #333;
+      font-size: 14px;
+      height: 40px;
+      padding-left: 10px;
+      width: 100%;
+
+      &:hover,
+      &:active,
+      &:focus {
+        border-bottom-color: $black--two;
+      }
+    }
+
+    span {
+      display: inline-flex;
+      width: 100%;
+
+      button {
+        background: $white !important;
+        border: none !important;
+        color: $black--two;
+        outline: none !important;
+        box-shadow: none !important;
+
+        &:hover,
+        &:active,
+        &:focus {
+          text-decoration: none !important;
+          background: $white !important;
+          color: $black--two;
+          outline: none !important;
+        }
+      }
+    }
+
+    ::placeholder {
+      opacity: 1; /* Firefox */
+
+      /* Chrome, Firefox, Opera, Safari 10.1+ */
+      color: $grey--seven;
+    }
+
+    :-ms-input-placeholder {
+      /* Internet Explorer 10-11 */
+      color: $grey--seven;
+    }
+
+    ::-ms-input-placeholder {
+      /* Microsoft Edge */
+      color: $grey--seven;
+    }
+  }
+
+  &.login-form {
+    padding: 60px 50px;
+
+    background-color: $grey--twentyOne;
+
+    @include respond(extra-small-mobile) {
+      padding: 50px 20px;
+    }
+
+    &--register {
+      padding: 60px 50px;
+
+      @include respond(extra-small-mobile) {
+        padding: 50px 20px;
+      }
+
+      label {
+        font-size: 15px;
+        font-weight: 500;
+        line-height: 24px;
+
+        letter-spacing: 1px;
+        text-transform: uppercase;
+
+        color: $black--two;
+
+        span {
+          color: $red--two;
+        }
+      }
+    }
+
+    .remember-text {
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 25px;
+
+      color: $black--two;
+    }
+
+    .reset-pass-link {
+      font-size: 15px;
+      line-height: 24px;
+
+      display: block;
+
+      margin-top: 20px;
+
+      color: $black--two;
+
+      &:hover {
+        color: $black--two;
+      }
+    }
+  }
+
+  &.order-tracking-form {
+    label {
+      font-size: 20px;
+      line-height: 32px;
+
+      color: $black--two;
+    }
+
+    .order-tracking-button {
+      padding: 10px 65px;
+    }
+  }
+}
+
+
+.order-tracking-box {
+  padding: 50px;
+
+  background-color: $grey--twentyOne;
+
+  @include respond(extra-small-mobile) {
+    padding: 20px;
+  }
+
+  .info-text {
+    line-height: 1.5;
+  }
+}
+
+
+/*=====  End of form  ======*/
+

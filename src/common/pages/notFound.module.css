@@ -1,0 +1,39 @@
+.container {
+    width: 100%;
+    background: black;
+    color: white;
+    position: absolute;
+    top: 0;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    align-content: center;
+    display: flex;
+    flex-direction: column;
+}
+
+.box {
+    top: 30%;
+    position: relative;
+}
+
+.code,
+.text,
+.button {
+    display: flex;
+    justify-content: center;
+    padding: 25px;
+}
+
+.code {
+    font-size: 70px;
+}
+
+.logo {
+    display: flex;
+    justify-content: center;
+}
+
+.logo img {
+    width: 300px;
+}

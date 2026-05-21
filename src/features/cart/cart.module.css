@@ -1,0 +1,27 @@
+.goBack {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 1rem 0 0 3rem;
+    cursor: pointer;
+}
+
+.goBackLda {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    cursor: pointer;
+    margin-top: 15px;
+    margin-bottom: 35px;
+}
+
+.goBack svg,
+.goBackLda svg{
+    vertical-align: middle;
+}
+
+.title {
+    margin-bottom: 0.625rem;
+    text-align: center;
+    width: 100%;
+}

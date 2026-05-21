@@ -1,0 +1,26 @@
+.help {
+    border: solid 1px #cecece;
+    padding: 25px;
+    border-radius: 0.3125rem;
+}
+
+.contactContainer {
+    margin-bottom: 2rem;
+}
+
+.contactLink {
+    color: inherit;
+    text-decoration: none;
+}
+
+.contactDiv {
+    padding-bottom: 15px;
+}
+
+.contactDiv svg {
+    vertical-align: middle;
+}
+
+.title{
+    margin-bottom: 25px;
+}

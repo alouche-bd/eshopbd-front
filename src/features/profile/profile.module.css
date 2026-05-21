@@ -1,0 +1,22 @@
+.title {
+    margin-bottom: 3rem;
+    margin-top: 3rem;
+    text-align: center;
+    width: 100%;
+}
+
+.password {
+    margin-bottom: 3rem;
+    margin-top: 3rem;
+    text-align: center;
+    width: 100%;
+}
+
+h4 {
+    margin-bottom: 25px
+}
+
+.topRow,
+.bottomRow {
+    margin-bottom: 2rem;
+}

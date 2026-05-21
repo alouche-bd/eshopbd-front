@@ -1,0 +1,41 @@
+.bannerButtonDark {
+    border: 2px solid black;
+    background: linear-gradient(to top, black 50%, white 50%);
+    background-size: 100% 200%;
+    background-position: top left;
+    transition: all 0.3s ease-out;
+    font-family: inherit;
+    font-weight: bolder;
+    text-transform: uppercase;
+    padding: 15px 20px 10px 20px;
+    margin: 30px auto 0;
+    cursor: pointer;
+    color: black;
+}
+
+.bannerButtonDark:hover {
+    border: 2px solid black;
+    background-position: bottom left;
+    color: white;
+}
+
+.bannerButtonLight {
+    border: solid 2px black;
+    background: linear-gradient(to top, white 50%, black 50%);
+    background-size: 100% 200%;
+    background-position: top left;
+    transition: all 0.3s ease-out;
+    font-family: inherit;
+    font-weight: bolder;
+    text-transform: uppercase;
+    padding: 15px 20px 10px 20px;
+    margin: 30px auto 0;
+    cursor: pointer;
+    color: white;
+}
+
+.bannerButtonLight:hover {
+    border: 2px solid black;
+    background-position: bottom left;
+    color: black;
+}

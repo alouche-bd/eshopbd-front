@@ -1,0 +1,46 @@
+.footer {
+    font-family: inherit;
+}
+
+.footerTitle {
+    font-size: x-large;
+    padding-bottom: 20px;
+    border-bottom: solid 1px #1ba9aa;
+    margin-bottom: 20px;
+}
+
+.footerDivider {
+    height: 1px;
+    background-image: linear-gradient(#1ba9aa, #1a8f9b);
+    width: 60%;
+    margin-bottom: 15px !important;
+    margin-top: 15px !important;
+}
+
+.footerLinkBox {
+    padding: 5px 0px 5px 0px;
+    text-align: left;
+}
+
+.footerLinkBox svg {
+    vertical-align: middle;
+}
+
+.footerLink,
+.copyright a {
+    text-decoration: none !important;
+    color: white;
+}
+
+.footerLink:hover,
+.copyright a:hover {
+    color: #1ba9aa;
+}
+
+.copyrightDivider {
+    height: 1px;
+    background-image: linear-gradient(#1ba9aa, #1a8f9b);
+    width: 100%;
+    margin-bottom: 15px !important;
+    margin-top: 15px !important;
+}

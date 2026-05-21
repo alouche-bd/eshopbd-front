@@ -1,0 +1,143 @@
+.inputContainer {
+    margin: 0 0 1.5rem;
+}
+
+.inpinputContainer input::placeholder {
+    color: #757575;
+    font-size: 0.8125rem;
+    font-family: "ITC Avant Garde Std text";
+    line-height: 1.3125rem;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.galaxy {
+    max-width: 30%;
+    margin-bottom: 25px;
+    background: black;
+    border: solid 1px black;
+}
+
+.inputSpan {
+    display: -webkit-inline-box;
+    display: -ms-inline-flexbox;
+    font-family: "ITC Avant Garde Std text";
+    display: inline-flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    height: 3.0625rem;
+    padding: 0;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    border: 0.0625rem solid #cecece;
+    background-color: #fff;
+    border-radius: 0.3125rem;
+    position: relative;
+    width: 100%;
+}
+
+.forgottenPasswordDiv {
+    font-size: smaller;
+}
+
+.inputSpan input {
+    font-family: "ITC Avant Garde Std text";
+    border: 0;
+    border-radius: 0.3125rem;
+    font-size: 0.8125rem;
+    line-height: 1.3125rem;
+    width: 100%;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    background-color: transparent;
+    outline: none;
+}
+
+.inputSpan input:focus {
+    outline: none;
+}
+
+.errorText {
+    margin-top: 0.1875rem;
+    font-family: "ITC Avant Garde Std text";
+    text-align: right;
+    font-size: 0.8125rem;
+    line-height: 1.3125rem;
+    min-height: 0.8125rem;
+    color: #d70000;
+}
+
+.loginContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100%;
+    padding-bottom: 0 !important;
+}
+
+.login {
+    width: 80%;
+    margin: auto;
+    flex-shrink: 0;
+    flex-grow: 1;
+    justify-content: center;
+    padding: 1.25rem 3.125rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-sizing: border-box;
+}
+
+.title {
+    margin-bottom: 0.625rem;
+    text-align: center;
+    width: 100%;
+}
+
+.description {
+    text-align: center;
+    width: 100%;
+}
+
+.loginFormContainer {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+}
+
+.loginForm {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    width: 100%;
+    max-width: 20.9375rem;
+    margin: 0.5rem auto;
+}
+
+.buttons {
+    text-align: center;
+}
+
+.register {
+    background-color: #f6f6f6;
+    width: 100%;
+    flex-grow: 1;
+    justify-content: center;
+    padding: 2rem 0;
+    margin: 5rem 0;
+}
+
+.goBack svg {
+    vertical-align: middle;
+}

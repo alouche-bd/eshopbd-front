@@ -1,0 +1,16 @@
+.title {
+    margin-bottom: 3rem;
+    margin-top: 3rem;
+    text-align: center;
+    width: 100%;
+    text-transform: capitalize;
+}
+
+.noResult {
+    width: 100%;
+    text-align: center;
+}
+
+.noResult svg {
+    vertical-align: bottom;
+}

@@ -1,0 +1,27 @@
+.quantityInput {
+    display: flex;
+    width: 100%;
+    align-items: center;
+}
+
+.quantityInput button {
+    outline: none;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #9d9d9c;
+}
+
+.quantityInput input {
+    width: inherit;
+    border: none;
+    font-size: inherit;
+    font-family: inherit;
+    text-align: center;
+}
+
+.quantityInput input:focus {
+    outline: solid 1px #9d9d9c;
+    border-radius: 1px;
+    box-shadow: 0px 0px 3px 0px;
+}
