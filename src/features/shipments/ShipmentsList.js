@@ -16,6 +16,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import HourglassEmptyIcon from "@mui/icons-material/HourglassEmpty";
 import {useHistory} from "react-router";
 import {IconButton, Tooltip, Chip} from "@mui/material";
+import Spinner from "../../common/components/spinner/Spinner";
 
 const useStyles = makeStyles({
     root: {
@@ -58,7 +59,7 @@ const ShipmentsList = () => {
     // Distributor-only: surface local DB orders that haven't been sent to
     // Sage yet (no sage_order_reference + not archived). Merged with the
     // ERP shipments below so distributors see one unified history.
-    const {data: pendingData} = useGetMyPendingDistributorOrdersQuery(undefined, {
+    const {data: pendingData, isFetching: isFetchingPending} = useGetMyPendingDistributorOrdersQuery(undefined, {
         skip: !isDistributor(user),
     });
 
@@ -232,7 +233,11 @@ const ShipmentsList = () => {
         setRows(mergedAll);
     }, [mergedAll]);
 
-    if (isFetching && rows === undefined) return <></>;
+    // Show the loader during the initial fetch — both for the ERP shipments
+    // call and the distributor-only pending-orders call. Without this check,
+    // the empty state below would flash before the data populates because
+    // `rows` is initialised to `[]`, not `undefined`.
+    if (isFetching || isFetchingPending) return <Spinner/>;
 
     if (!mergedAll.length) {
         return (

@@ -13,6 +13,7 @@ import CreditsSold from "./CreditsSold";
 import PhoneIcon from "@mui/icons-material/Phone";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import CloudOffIcon from "@mui/icons-material/CloudOff";
+import Spinner from "../../common/components/spinner/Spinner";
 
 const useStyles = makeStyles({
     root: {
@@ -132,7 +133,7 @@ const Credits = () => {
         setRows(data);
     }, [data]);
 
-    if (isFetching || rows === undefined || isFetchingSold) return <></>;
+    if (isFetching || rows === undefined || isFetchingSold) return <Spinner/>;
 
     if (!data && !creditSold)
         return (

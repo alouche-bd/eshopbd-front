@@ -13,6 +13,7 @@ import SubmitButton from "../../common/components/buttons/SubmitButton";
 import CloudOffIcon from "@mui/icons-material/CloudOff";
 import {useHistory, useLocation} from "react-router";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
+import Spinner from "../../common/components/spinner/Spinner";
 
 const Addresses = () => {
     const {t} = useTranslation();
@@ -57,7 +58,7 @@ const Addresses = () => {
         isFetching: isLoadingClientInfos,
     } = useGetClientInfosQuery(user.codeclientGC);
 
-    if (isFetching || isLoadingClientInfos) return <></>;
+    if (isFetching || isLoadingClientInfos) return <Spinner/>;
 
     if (!data)
         return (

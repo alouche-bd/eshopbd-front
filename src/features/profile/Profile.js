@@ -8,6 +8,7 @@ import {useTranslation} from "react-i18next";
 import {authSelector} from "../auth/authSlice";
 import styles from "./profile.module.css";
 import {useGetSmileysQuery} from "../../app/services/x3Api";
+import Spinner from "../../common/components/spinner/Spinner";
 
 const Profile = () => {
     const {t} = useTranslation();
@@ -23,7 +24,7 @@ const Profile = () => {
 
     const {data, isFetching, isError, error} = useGetSmileysQuery(user.suid);
 
-    if (isFetching) return <></>;
+    if (isFetching) return <Spinner/>;
     if (isError) return <div>{error}</div>;
 
     return (

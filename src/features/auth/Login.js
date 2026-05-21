@@ -107,7 +107,7 @@ const Login = () => {
                                 {submitError && <div className="error">{submitError}</div>}{" "}
                                 <div className={styles.buttons}>
                                     <SubmitButton
-                                        buttonText={t("login.submit")}
+                                        buttonText={submitting ? t("login.submitting") : t("login.submit")}
                                         disabled={submitting}
                                         type="submit"
                                         buttonStyle="dark"

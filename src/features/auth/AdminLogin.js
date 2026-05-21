@@ -43,17 +43,17 @@ const AdminLogin = () => {
     return (
         <div className={styles.loginContainer}>
             <div className={styles.login}>
-                <h2 className={styles.title}>Connexion</h2>
+                <h2 className={styles.title}>{t("login.title")}</h2>
 
                 <Form
                     onSubmit={onSubmit}
                     validate={(values) => {
                         const errors = {};
                         if (!values.email) {
-                            errors.email = "Ce champs est requis";
+                            errors.email = t("common.requiredField");
                         }
                         if (!values.password) {
-                            errors.password = "Ce champs est requis";
+                            errors.password = t("common.requiredField");
                         }
                         return errors;
                     }}
@@ -64,7 +64,7 @@ const AdminLogin = () => {
                                     {({input, meta}) => (
                                         <div className={styles.inputContainer}>
                       <span className={styles.inputSpan}>
-                        <input {...input} type="text" placeholder="*Email"/>
+                        <input {...input} type="text" placeholder={"*" + t("login.email")}/>
                       </span>{" "}
                                             {(meta.error || meta.submitError) && meta.touched && (
                                                 <span className={styles.errorText}>
@@ -81,7 +81,7 @@ const AdminLogin = () => {
                         <input
                             {...input}
                             type={showPassword ? "text" : "password"}
-                            placeholder="*Mot de passe"
+                            placeholder={"*" + t("login.password")}
                         />
                         <IconButton onClick={handleShowPassword}>
                           {showPassword ? (
@@ -100,7 +100,7 @@ const AdminLogin = () => {
                                 {submitError && <div className="error">{submitError}</div>}{" "}
                                 <div className={styles.buttons}>
                                     <SubmitButton
-                                        buttonText="Me connecter"
+                                        buttonText={submitting ? t("login.submitting") : t("login.submit")}
                                         disabled={submitting}
                                         type="submit"
                                         buttonStyle="dark"

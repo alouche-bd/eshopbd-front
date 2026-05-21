@@ -10,6 +10,7 @@ import {isoStringToDate} from "../../common/utils/helperFunctions";
 import SubmitButton from "../../common/components/buttons/SubmitButton";
 import styles from "./wishlistList.module.css";
 import CloudOffIcon from "@mui/icons-material/CloudOff";
+import Spinner from "../../common/components/spinner/Spinner";
 
 const PostList = () => {
     const {t} = useTranslation();
@@ -20,7 +21,7 @@ const PostList = () => {
     const [deleteWishlist] = useDeleteWishlistMutation();
 
     if (isFetching) {
-        return <></>;
+        return <Spinner/>;
     }
 
     if (!wishlists || !wishlists?.wishlist?.length) {

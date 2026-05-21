@@ -11,6 +11,7 @@ import {escapeRegExp} from "../../common/utils/helperFunctions";
 import DownloadBillCell from "../../common/components/downloadBillCell/downloadBillCell";
 import CloudOffIcon from "@mui/icons-material/CloudOff";
 import {useGetAllBillsQuery} from "../../app/services/x3Api";
+import Spinner from "../../common/components/spinner/Spinner";
 
 const useStyles = makeStyles({
     root: {
@@ -128,7 +129,7 @@ const Bills = () => {
         setRows(data);
     }, [data]);
 
-    if (isFetching || rows === undefined) return <></>;
+    if (isFetching || rows === undefined) return <Spinner/>;
 
     if (!data)
         return (
