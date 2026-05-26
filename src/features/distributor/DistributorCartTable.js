@@ -59,6 +59,34 @@ const DistributorCartTable = ({products, total}) => {
 
     const [triggerRepartition, {isLoading: isRepartitioning}] = usePostGetRepartitionMutation();
 
+    const codeclient = user?.sage_client_code || user?.codeclientGC;
+
+    // Live pricing: re-fetch the real repartition prices whenever the cart
+    // contents change (item added/removed or quantity edited). The fulfilled
+    // response is folded back into each cart item by the cartSlice matcher
+    // (puttc = prix * (1 - remise/100)), so the prices and total rendered below
+    // are the client's real prices — not indicative ones.
+    const cartSignature = products
+        .map((p) => `${p.reference}:${p.cartQuantity}`)
+        .join("|");
+
+    useEffect(() => {
+        if (!products.length || !codeclient) return;
+        const payload = {
+            nomBaseSAGE: BASE_BDD,
+            codeclient,
+            articles: {
+                article: products.map((item, index) => ({
+                    code: item.reference, quantite: item.cartQuantity, index,
+                })),
+            },
+        };
+        // Debounce so rapid +/- clicks or typing in the qty field fire once.
+        const timer = setTimeout(() => { triggerRepartition(payload); }, 400);
+        return () => clearTimeout(timer);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [cartSignature, codeclient]);
+
     const handleAddLine = () => setNbEmptyRows(nbEmptyRows + 1);
 
     const handleValidateAndPrice = async () => {
@@ -68,7 +96,7 @@ const DistributorCartTable = ({products, total}) => {
         }
         const payload = {
             nomBaseSAGE: BASE_BDD,
-            codeclient: user?.sage_client_code || user?.codeclientGC,
+            codeclient,
             articles: {
                 article: products.map((item, index) => ({
                     code: item.reference, quantite: item.cartQuantity, index,
@@ -209,10 +237,18 @@ const DistributorCartTable = ({products, total}) => {
                                 </Stack>
                             </Grid>
                             <Grid item xs={2} sx={{textAlign: "right", fontSize: 13, color: "text.secondary"}}>
-                                {unitPrice ? `${Number(unitPrice).toFixed(2)} ${cur}` : "—"}
+                                {unitPrice
+                                    ? `${Number(unitPrice).toFixed(2)} ${cur}`
+                                    : isRepartitioning
+                                        ? <CircularProgress size={12} sx={{color: "rgba(0,0,0,0.3)"}}/>
+                                        : "—"}
                             </Grid>
                             <Grid item xs={2} sx={{textAlign: "right", fontSize: 17, fontWeight: 700, letterSpacing: "-0.02em", color: "text.primary"}}>
-                                {unitPrice ? `${lineTotal.toFixed(2)} ${cur}` : "—"}
+                                {unitPrice
+                                    ? `${lineTotal.toFixed(2)} ${cur}`
+                                    : isRepartitioning
+                                        ? <CircularProgress size={14} sx={{color: "rgba(0,0,0,0.3)"}}/>
+                                        : "—"}
                             </Grid>
                             <Grid item xs={1} sx={{textAlign: "right"}}>
                                 <Tooltip title={t("cart.remove")}>
