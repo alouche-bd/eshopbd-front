@@ -245,7 +245,10 @@ const AdvInterOrderEditor = () => {
                 currency:           data.order.currency || "EUR",
                 delivery_address:   data.order.delivery_address || null,
                 billing_address:    data.order.billing_address || null,
-                products: (data.order.product || []).map((p) => ({...p})),
+                // Lines loaded from a saved order already carry real prices, so
+                // they count as priced. Lines added later start unpriced until
+                // the repartition recalc fills in the client's price.
+                products: (data.order.product || []).map((p) => ({...p, priced: true})),
             });
             setDirty(false);
         }
@@ -303,6 +306,10 @@ const AdvInterOrderEditor = () => {
             discount_2:   0,
             discount_3:   0,
             line_total_ht: product.puttc ?? 0,
+            // Indicative catalog price above is kept only as a fallback; the line
+            // stays unpriced (no price shown, excluded from total) until the
+            // repartition recalc below returns the client's real price.
+            priced: false,
         };
         setDraft((d) => ({...d, products: [...d.products, newLine]}));
         setDirty(true);
@@ -350,7 +357,7 @@ const AdvInterOrderEditor = () => {
             });
             setDraft((d) => ({
                 ...d,
-                products: d.products.map((line) => priceMap[line.reference] ? {...line, ...priceMap[line.reference]} : line),
+                products: d.products.map((line) => priceMap[line.reference] ? {...line, ...priceMap[line.reference], priced: true} : line),
             }));
             setDirty(true);
             toast.success("Prix recalculés");
@@ -382,11 +389,31 @@ const AdvInterOrderEditor = () => {
         }
     };
 
+    // Total reflects only repartition-priced lines, so a freshly added line
+    // doesn't bump the total with its indicative catalog price before the
+    // recalc lands.
+    const pricedCount = (draft.products || []).filter((p) => p.priced === true).length;
     const total = (draft.products || []).reduce(
-        (s, p) => s + (Number(p.gross_price) || 0) * (1 - (Number(p.discount_1) || 0) / 100) * (Number(p.cartQuantity) || 0),
+        (s, p) => (p.priced === true
+            ? s + (Number(p.gross_price) || 0) * (1 - (Number(p.discount_1) || 0) / 100) * (Number(p.cartQuantity) || 0)
+            : s),
         0,
     );
+    // While the first price is still in flight there's nothing to show yet.
+    const totalPending = (draft.products || []).length > 0 && pricedCount === 0 && repricing;
     const selectedDeliveryCode = draft.delivery_address?.code;
+
+    // Render a price/discount cell: the editable input once the line is priced,
+    // otherwise a loader (while the recalc runs) or a dash.
+    const priceCell = (priced, input) => priced
+        ? input
+        : (
+            <Box sx={{display: "flex", justifyContent: "flex-end", alignItems: "center", minHeight: 32}}>
+                {repricing
+                    ? <CircularProgress size={14} sx={{color: "rgba(0,0,0,0.3)"}}/>
+                    : <Box sx={{color: "text.disabled"}}>—</Box>}
+            </Box>
+        );
 
     return (
         <Container maxWidth="xl" sx={{pt: 0, pb: {xs: 4, md: 6}}}>
@@ -477,7 +504,9 @@ const AdvInterOrderEditor = () => {
                     </Grid>
 
                     {/* Lines */}
-                    {draft.products.map((p, i) => (
+                    {draft.products.map((p, i) => {
+                        const priced = p.priced === true;
+                        return (
                         <Box key={i} sx={{mb: 0.5, px: 2, py: 1.5, backgroundColor: "#fff", borderBottom: "1px solid rgba(0,0,0,0.06)"}}>
                             <Grid container alignItems="center" spacing={1}>
                                 <Grid item xs={2}>
@@ -490,13 +519,13 @@ const AdvInterOrderEditor = () => {
                                     <Box component="input" type="number" disabled={locked} value={p.cartQuantity || 0} onChange={(e) => updateProduct(i, {cartQuantity: parseInt(e.target.value, 10) || 0})} sx={{...inputBaseSx(locked), textAlign: "center"}}/>
                                 </Grid>
                                 <Grid item xs={2}>
-                                    <Box component="input" type="number" step="0.01" disabled={locked} value={p.gross_price || 0} onChange={(e) => updateProduct(i, {gross_price: parseFloat(e.target.value) || 0})} sx={{...inputBaseSx(locked), textAlign: "right"}}/>
+                                    {priceCell(priced, <Box component="input" type="number" step="0.01" disabled={locked} value={p.gross_price || 0} onChange={(e) => updateProduct(i, {gross_price: parseFloat(e.target.value) || 0})} sx={{...inputBaseSx(locked), textAlign: "right"}}/>)}
                                 </Grid>
                                 <Grid item xs={1}>
-                                    <Box component="input" type="number" step="0.01" disabled={locked} value={p.discount_1 || 0} onChange={(e) => updateProduct(i, {discount_1: parseFloat(e.target.value) || 0})} sx={{...inputBaseSx(locked), textAlign: "right"}}/>
+                                    {priceCell(priced, <Box component="input" type="number" step="0.01" disabled={locked} value={p.discount_1 || 0} onChange={(e) => updateProduct(i, {discount_1: parseFloat(e.target.value) || 0})} sx={{...inputBaseSx(locked), textAlign: "right"}}/>)}
                                 </Grid>
                                 <Grid item xs={1}>
-                                    <Box component="input" type="number" step="0.01" disabled={locked} value={p.discount_2 || 0} onChange={(e) => updateProduct(i, {discount_2: parseFloat(e.target.value) || 0})} sx={{...inputBaseSx(locked), textAlign: "right"}}/>
+                                    {priceCell(priced, <Box component="input" type="number" step="0.01" disabled={locked} value={p.discount_2 || 0} onChange={(e) => updateProduct(i, {discount_2: parseFloat(e.target.value) || 0})} sx={{...inputBaseSx(locked), textAlign: "right"}}/>)}
                                 </Grid>
                                 <Grid item xs={1} sx={{textAlign: "right"}}>
                                     <Tooltip title="Retirer cette ligne">
@@ -512,7 +541,8 @@ const AdvInterOrderEditor = () => {
                                 </Grid>
                             </Grid>
                         </Box>
-                    ))}
+                        );
+                    })}
 
                     {/* ZSOH preview toggle */}
                     <Box sx={{mt: 3}}>
@@ -597,8 +627,10 @@ const AdvInterOrderEditor = () => {
             {/* Sticky CTA */}
             <Box sx={{position: "sticky", bottom: 16, zIndex: 10, py: 2, px: 3, mt: 4, backgroundColor: "#fff", border: "1px solid rgba(0,0,0,0.12)", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 2, flexWrap: "wrap", boxShadow: "0 -2px 16px rgba(0,0,0,0.04)"}}>
                 <Box>
-                    <Box sx={{fontSize: 26, fontWeight: 600, letterSpacing: "-0.02em", lineHeight: 1.1}}>
-                        {total.toFixed(2)} {draft.currency || ""}
+                    <Box sx={{fontSize: 26, fontWeight: 600, letterSpacing: "-0.02em", lineHeight: 1.1, display: "flex", alignItems: "center", minHeight: 32}}>
+                        {totalPending
+                            ? <CircularProgress size={20} sx={{color: "rgba(0,0,0,0.3)"}}/>
+                            : `${total.toFixed(2)} ${draft.currency || ""}`}
                     </Box>
                     <Box sx={{fontSize: 11, color: "text.secondary", letterSpacing: "0.05em", mt: 0.5, textTransform: "uppercase"}}>
                         {draft.products.length} {draft.products.length === 1 ? "ligne" : "lignes"} {dirty && "· non enregistré"}

@@ -49,7 +49,6 @@ const DistributorCart = () => {
 
             <DistributorCartTable
                 products={cart.cartItems}
-                total={cart.cartTotalAmount}
             />
         </Container>
     );

@@ -322,6 +322,11 @@ const cartSlice = createSlice({
                             itemExist.typedocument = item.typedocument;
                             itemExist.puttc = item.prix * (1 - item.remise / 100);
                             itemExist.remise1montant = item.remise;
+                            // Mark the line as carrying the real, client-specific
+                            // repartition price (not the indicative catalog puttc
+                            // it was added with). The distributor cart only shows a
+                            // price / counts a line in the total once this is set.
+                            itemExist.priced = true;
                         }
                     });
                 }

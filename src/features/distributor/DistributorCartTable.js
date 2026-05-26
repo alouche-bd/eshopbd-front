@@ -37,7 +37,7 @@ const currencySymbol = (code) => {
  *   - Generous vertical rhythm
  *   - Numbers in tabular weight 600 for scan-ability
  */
-const DistributorCartTable = ({products, total}) => {
+const DistributorCartTable = ({products}) => {
     const dispatch = useDispatch();
     const {push} = useHistory();
     const {t} = useTranslation();
@@ -116,6 +116,17 @@ const DistributorCartTable = ({products, total}) => {
     const hasItems  = products.length > 0;
     const cur       = currencySymbol(user?.currency);
 
+    // Total reflects only lines the repartition API has priced, so a freshly
+    // added item doesn't bump the total with its indicative catalog price
+    // before the response lands.
+    const pricedCount = products.filter((p) => p.priced === true).length;
+    const pricedTotal = products.reduce(
+        (sum, p) => (p.priced === true ? sum + (p.puttc || 0) * (p.cartQuantity || 0) : sum),
+        0
+    );
+    // While the first price is still in flight there's nothing to show yet.
+    const totalPending = hasItems && pricedCount === 0 && isRepartitioning;
+
     const microLabelSx = {
         fontSize: 10, fontWeight: 500, letterSpacing: "0.1em",
         textTransform: "uppercase", color: "rgba(0,0,0,0.5)",
@@ -145,8 +156,12 @@ const DistributorCartTable = ({products, total}) => {
 
             {/* Filled rows */}
             {products.map((product, index) => {
-                const unitPrice = product.puttc ?? product.prixbrut ?? 0;
-                const lineTotal = unitPrice * (product.cartQuantity || 0);
+                // Only the repartition response carries the client's real price.
+                // Until it lands, `priced` is unset and we show a loader instead
+                // of the indicative catalog price the item was added with.
+                const priced    = product.priced === true;
+                const unitPrice = priced ? product.puttc : null;
+                const lineTotal = priced ? unitPrice * (product.cartQuantity || 0) : 0;
                 return (
                     <Box
                         key={`row-${product.reference}-${index}`}
@@ -237,14 +252,14 @@ const DistributorCartTable = ({products, total}) => {
                                 </Stack>
                             </Grid>
                             <Grid item xs={2} sx={{textAlign: "right", fontSize: 13, color: "text.secondary"}}>
-                                {unitPrice
+                                {priced
                                     ? `${Number(unitPrice).toFixed(2)} ${cur}`
                                     : isRepartitioning
                                         ? <CircularProgress size={12} sx={{color: "rgba(0,0,0,0.3)"}}/>
                                         : "—"}
                             </Grid>
                             <Grid item xs={2} sx={{textAlign: "right", fontSize: 17, fontWeight: 700, letterSpacing: "-0.02em", color: "text.primary"}}>
-                                {unitPrice
+                                {priced
                                     ? `${lineTotal.toFixed(2)} ${cur}`
                                     : isRepartitioning
                                         ? <CircularProgress size={14} sx={{color: "rgba(0,0,0,0.3)"}}/>
@@ -316,8 +331,10 @@ const DistributorCartTable = ({products, total}) => {
                 }}
             >
                 <Box>
-                    <Box sx={{fontSize: 26, fontWeight: 600, letterSpacing: "-0.02em", color: "text.primary", lineHeight: 1.1}}>
-                        {Number(total || 0).toFixed(2)} {cur}
+                    <Box sx={{fontSize: 26, fontWeight: 600, letterSpacing: "-0.02em", color: "text.primary", lineHeight: 1.1, display: "flex", alignItems: "center", minHeight: 32}}>
+                        {totalPending
+                            ? <CircularProgress size={20} sx={{color: "rgba(0,0,0,0.3)"}}/>
+                            : `${pricedTotal.toFixed(2)} ${cur}`}
                     </Box>
                     {hasItems && (
                         <Box sx={{fontSize: 11, color: "text.secondary", letterSpacing: "0.05em", mt: 0.5}}>
