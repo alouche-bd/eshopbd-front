@@ -2,7 +2,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {useTranslation} from "react-i18next";
 import {authSelector} from "../auth/authSlice";
 import {useGetSmileysQuery} from "../../app/services/x3Api";
-import {isSmileysUnavailable, smileysArgs} from "../../common/utils/galaxy";
+import {SMILEYS_STATUS, smileysArgs, smileysMessageKey, smileysStatus} from "../../common/utils/galaxy";
 import {addDiscount, cartSelector, removeDiscount} from "../cart/cartSlice";
 import styles from "./addressForm.module.css";
 import SubmitButton from "../../common/components/buttons/SubmitButton";
@@ -13,7 +13,7 @@ const Smileys = () => {
     const {t} = useTranslation();
     const {user} = useSelector(authSelector);
 
-    const {data, isFetching, isError} = useGetSmileysQuery(smileysArgs(user));
+    const {data, isFetching, isError, error} = useGetSmileysQuery(smileysArgs(user));
 
     const cart = useSelector(cartSelector);
 
@@ -21,7 +21,9 @@ const Smileys = () => {
 
     if (isFetching) return <></>;
 
-    if (!data || isError) return <div className={styles.address}>{t("smileys.noSmileys")}</div>;
+    const status = smileysStatus({data, error: isError ? error : undefined});
+
+    if (!data && status === SMILEYS_STATUS.ERROR) return <div className={styles.address}>{t("smileys.noSmileys")}</div>;
 
     const handleUseSmileys = () => {
         if (cart.discount > 0) {
@@ -39,8 +41,8 @@ const Smileys = () => {
 
     return (
         <div className={styles.address}>
-            {isSmileysUnavailable(data) ? (
-                <h3 className="mb-2">{t("smileys.balanceTitle")} <small>{t("smileys.galaxyNotRecognized")}</small></h3>
+            {status !== SMILEYS_STATUS.OK ? (
+                <h3 className="mb-2">{t("smileys.balanceTitle")} <small>{t(smileysMessageKey(status))}</small></h3>
             ) : (
                 <>
                     <h3 className="mb-2">{t("smileys.balanceTitle")} {data.result - cart.discount}</h3>

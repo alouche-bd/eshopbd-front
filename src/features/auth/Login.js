@@ -7,6 +7,7 @@ import {usePostReverseLoginMutation} from "../../app/services/lumenApi";
 import SubmitButton from "../../common/components/buttons/SubmitButton";
 import {defaultRouteForUser} from "../../common/constants/userTypes";
 import {setLanguageFromUser} from "../../i18n";
+import {loginFailureKey} from "../../common/utils/galaxy";
 import styles from "./login.module.css";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
@@ -32,7 +33,7 @@ const Login = () => {
             // Backend returns HTTP 200 + {success: 0} on bad creds — guard
             // before navigating so failure stays on this page with a toast.
             if (!payload?.success || !payload?.user || !payload?.token) {
-                toast.error(t("login.invalidCredentials"));
+                toast.error(t(loginFailureKey(payload)));
                 return;
             }
             // Switch UI language based on the freshly-synced billing country
@@ -41,7 +42,7 @@ const Login = () => {
             setLanguageFromUser(payload.user);
             push(defaultRouteForUser(payload.user));
         } catch (error) {
-            toast.error(t("login.invalidCredentials"));
+            toast.error(t(loginFailureKey(error)));
         }
     };
 

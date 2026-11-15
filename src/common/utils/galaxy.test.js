@@ -36,6 +36,8 @@ describe("galaxy helpers", () => {
     it("flags the galaxy-api balance error codes", () => {
         expect(isSmileysUnavailable({success: 0, code: "GALAXY_USER_NOT_FOUND"})).toBe(true);
         expect(isSmileysUnavailable({success: 0, code: "GALAXY_ACCOUNT_UNAVAILABLE"})).toBe(true);
+        expect(isSmileysUnavailable({success: 0, code: "GALAXY_ACCOUNT_AMBIGUOUS"})).toBe(true);
+        expect(isSmileysUnavailable({success: 0, code: "GALAXY_PARTNER_SCOPE_DENIED"})).toBe(true);
         expect(isSmileysUnavailable({success: 1, result: 120})).toBe(false);
         expect(isSmileysUnavailable(undefined)).toBe(false);
     });

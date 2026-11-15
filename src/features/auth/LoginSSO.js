@@ -8,7 +8,7 @@ import {clearCart, clearShippingAddress} from "../cart/cartSlice";
 import {clearWishlist} from "../wishlist/wishlistSlice";
 import {defaultRouteForUser} from "../../common/constants/userTypes";
 import {setLanguageFromUser} from "../../i18n";
-import {readGalaxyCallback} from "../../common/utils/galaxy";
+import {loginFailureKey, readGalaxyCallback} from "../../common/utils/galaxy";
 import toast from "react-hot-toast";
 
 const LoginSSO = () => {
@@ -22,14 +22,14 @@ const LoginSSO = () => {
     const {push} = useHistory();
 
     useEffect(() => {
-        const fail = () => {
+        const fail = (failure) => {
             push("/login")
-            toast.error(t("login.invalidCredentials"));
+            toast.error(t(loginFailureKey(failure)));
         };
         const {code, state, error, token} = readGalaxyCallback(search);
 
         if (error) {
-            fail();
+            fail(null);
             return;
         }
 
@@ -53,6 +53,8 @@ const LoginSSO = () => {
                     // landing page (spec §4, §16).
                     setLanguageFromUser(payload.user);
                     push(defaultRouteForUser(payload.user));
+                } else {
+                    fail(payload);
                 }
             })
             .catch(fail)

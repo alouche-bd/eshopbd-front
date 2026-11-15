@@ -1,0 +1,97 @@
+{
+  "source": {
+    "repository": "eshopbd-back (api.shop.biotech-dental.com)",
+    "branch": "feat/galaxy-api-new-routes",
+    "commit": "1a0733a",
+    "recordedFrom": "tests/GalaxyApiContractTest.php (smileysRouteCases, loginRouteCases), which replays galaxy-api 6e6fc05 responses",
+    "galaxyApi": "galaxy-api 6e6fc05, OpenAPI generated with npm run doc:postman"
+  },
+  "getSmileys": {
+    "balance": {
+      "galaxy": "200 EshopSmileyBalanceDto",
+      "status": 200,
+      "body": {"success": 1, "result": 750, "salesforceAccountId": "001G500001JW73MIAT"},
+      "expect": "ok"
+    },
+    "accountAmbiguous": {
+      "galaxy": "409 ACCOUNT_AMBIGUOUS",
+      "status": 200,
+      "body": {"success": 0, "code": "GALAXY_ACCOUNT_AMBIGUOUS", "message": "The user belongs to several Salesforce accounts; pass salesforceAccountId", "accounts": 2},
+      "expect": "accountAmbiguous"
+    },
+    "accountNotMember": {
+      "galaxy": "403 ACCOUNT_NOT_MEMBER",
+      "status": 200,
+      "body": {"success": 0, "code": "GALAXY_ACCOUNT_NOT_MEMBER", "message": "The user is not an active contact of this Salesforce account"},
+      "expect": "accountNotMember"
+    },
+    "accountUnavailable": {
+      "galaxy": "403 or 409 without a known code",
+      "status": 200,
+      "body": {"success": 0, "code": "GALAXY_ACCOUNT_UNAVAILABLE", "message": "salesforceAccountId is required"},
+      "expect": "unavailable"
+    },
+    "userNotFound": {
+      "galaxy": "404 PARTNER_USER_NOT_FOUND",
+      "status": 200,
+      "body": {"success": 0, "code": "GALAXY_USER_NOT_FOUND", "message": "User not found"},
+      "expect": "userUnknown"
+    },
+    "userInactive": {
+      "galaxy": "403 PARTNER_USER_INACTIVE",
+      "status": 200,
+      "body": {"success": 0, "code": "GALAXY_USER_INACTIVE", "message": "User account is not activated"},
+      "expect": "userUnknown"
+    },
+    "partnerClientUnknown": {
+      "galaxy": "403 PARTNER_CLIENT_UNKNOWN",
+      "status": 502,
+      "body": {"success": 0, "code": "GALAXY_PARTNER_CLIENT_UNKNOWN", "message": "This client is not registered as a partner"},
+      "expect": "partnerRefused"
+    },
+    "partnerScopeDenied": {
+      "galaxy": "403 PARTNER_SCOPE_DENIED",
+      "status": 502,
+      "body": {"success": 0, "code": "GALAXY_PARTNER_SCOPE_DENIED", "message": "Missing partner scope: smileys:read"},
+      "expect": "partnerRefused"
+    },
+    "galaxyDown": {
+      "galaxy": "5xx, 503 SALESFORCE_UNAVAILABLE or unreachable",
+      "status": 502,
+      "body": {"error": "Quelque chose s'est mal passé.", "code": 502},
+      "expect": "error"
+    }
+  },
+  "login": {
+    "partnerClientUnknown": {
+      "galaxy": "403 PARTNER_CLIENT_UNKNOWN",
+      "status": 502,
+      "body": {"success": 0, "code": "GALAXY_PARTNER_CLIENT_UNKNOWN", "message": "This client is not registered as a partner"},
+      "expect": "login.galaxyUnavailable"
+    },
+    "partnerScopeDenied": {
+      "galaxy": "403 PARTNER_SCOPE_DENIED",
+      "status": 502,
+      "body": {"success": 0, "code": "GALAXY_PARTNER_SCOPE_DENIED", "message": "Missing partner scope: users:read"},
+      "expect": "login.galaxyUnavailable"
+    },
+    "userInactive": {
+      "galaxy": "403 PARTNER_USER_INACTIVE",
+      "status": 403,
+      "body": {"success": 0, "code": "GALAXY_USER_INACTIVE", "message": "User account is not activated"},
+      "expect": "login.galaxyInactive"
+    },
+    "invalidCredentials": {
+      "galaxy": "Keycloak 400/401, galaxy-api 401 or 404 PARTNER_USER_NOT_FOUND",
+      "status": 401,
+      "body": {"success": 0, "code": "GALAXY_INVALID_CREDENTIALS", "message": "Invalid user credentials"},
+      "expect": "login.invalidCredentials"
+    },
+    "legacyFailure": {
+      "galaxy": "back with GALAXY_API_ENABLED=false",
+      "status": 200,
+      "body": {"success": 0, "message": "Invalid credentials"},
+      "expect": "login.invalidCredentials"
+    }
+  }
+}
