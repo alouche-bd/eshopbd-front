@@ -1,5 +1,7 @@
 # Getting Started with Create React App
 
+> Intégration Galaxy : voir [docs/galaxy-api-migration.md](docs/galaxy-api-migration.md) (nouvelles routes galaxy-api via le back, Keycloak `s4a`, script `scripts/setup-galaxy-api.sh`).
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
