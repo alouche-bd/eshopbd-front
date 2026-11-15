@@ -23,10 +23,9 @@ const Profile = () => {
 
     const {user} = useSelector(authSelector);
 
-    const {data, isFetching, isError, error} = useGetSmileysQuery(smileysArgs(user));
+    const {data, isFetching, isError} = useGetSmileysQuery(smileysArgs(user));
 
     if (isFetching) return <Spinner/>;
-    if (isError) return <div>{error}</div>;
 
     return (
         <Box sx={{flexGrow: 1}} bgcolor="#f7f7f7" p={3}>
@@ -45,7 +44,7 @@ const Profile = () => {
                 <Grid item md={6}>
                     <Item>
                         <h4 className="mb-4">{t("profile.account.sectionSmileys").toUpperCase()}</h4>
-                        <Typography>{data && !isSmileysUnavailable(data) ? data.result : t("profile.account.noSmileys")}</Typography>
+                        <Typography>{data && !isError && !isSmileysUnavailable(data) ? data.result : t("profile.account.noSmileys")}</Typography>
                     </Item>
                 </Grid>
             </Grid>
