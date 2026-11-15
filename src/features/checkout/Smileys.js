@@ -2,6 +2,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {useTranslation} from "react-i18next";
 import {authSelector} from "../auth/authSlice";
 import {useGetSmileysQuery} from "../../app/services/x3Api";
+import {isSmileysUnavailable, smileysArgs} from "../../common/utils/galaxy";
 import {addDiscount, cartSelector, removeDiscount} from "../cart/cartSlice";
 import styles from "./addressForm.module.css";
 import SubmitButton from "../../common/components/buttons/SubmitButton";
@@ -12,7 +13,7 @@ const Smileys = () => {
     const {t} = useTranslation();
     const {user} = useSelector(authSelector);
 
-    const {data, isFetching, isError, error} = useGetSmileysQuery(user.suid);
+    const {data, isFetching, isError, error} = useGetSmileysQuery(smileysArgs(user));
 
     const cart = useSelector(cartSelector);
 
@@ -40,7 +41,7 @@ const Smileys = () => {
 
     return (
         <div className={styles.address}>
-            {data.code && data.code === "ERR-SMY-002" ? (
+            {isSmileysUnavailable(data) ? (
                 <h3 className="mb-2">{t("smileys.balanceTitle")} <small>{t("smileys.galaxyNotRecognized")}</small></h3>
             ) : (
                 <>

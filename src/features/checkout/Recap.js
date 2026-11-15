@@ -124,7 +124,8 @@ const Recap = () => {
             };
         }),
         smileyamount: cart.discount,
-        uuid: labClient ? labClient.suid : user.suid
+        uuid: labClient ? labClient.suid : user.suid,
+        salesforceAccountId: labClient ? undefined : user.sfuid
     }
 
     const orderToSend = {

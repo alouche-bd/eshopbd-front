@@ -6,6 +6,7 @@ import React from "react";
 import {useHistory} from "react-router";
 import toast from "react-hot-toast";
 import {useAskRegistrationMutation} from "../../app/services/x3Api";
+import {galaxyFrontUrl} from "../../common/utils/galaxy";
 
 const AskSignUp = () => {
     const {push} = useHistory();
@@ -53,7 +54,7 @@ const AskSignUp = () => {
             <div className={styles.register}>
                 <h2 className={styles.title}>Demande de création de compte</h2>
                 <p className="mx-3">Si vous êtes déjà client Biotech Dental, merci d'activer votre compte <a
-                    href="https://www.biotechgalaxy.com/" target="_blank" rel="noreferrer">LaGalaxy</a></p>
+                    href={galaxyFrontUrl()} target="_blank" rel="noreferrer">LaGalaxy</a></p>
                 <Form
                     onSubmit={onSubmit}
                     validate={(values) => {

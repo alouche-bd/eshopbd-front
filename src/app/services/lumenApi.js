@@ -35,6 +35,9 @@ export const lumenApi = createApi({
                 };
             },
         }),
+        getGalaxyLoginUrl: build.query({
+            query: () => "galaxy/login-url",
+        }),
         postReverseLogin: build.mutation({
             query(body) {
                 return {
@@ -240,6 +243,7 @@ export const {
     usePostForgotPasswordMutation,
     usePostSendNewPasswordMutation,
     usePostReverseLoginMutation,
+    useLazyGetGalaxyLoginUrlQuery,
     usePostAttachSSOMutation,
     usePostOrderConfirmMutation,
     usePostAdminLoginMutation,
