@@ -1,6 +1,20 @@
 const DEFAULT_GALAXY_FRONT_URL = "https://www.biotechgalaxy.com/";
 const DEFAULT_INVOICE_PDF_BASE_URL = "https://api-galaxy.biotech-dental.com/api/factureGalaxyPdf";
 
+export const GALAXY_API_MODES = {
+    LEGACY: "legacy",
+    NEW: "new",
+};
+
+export const galaxyApiMode = (env = process.env) =>
+    String(env.REACT_APP_GALAXY_API_MODE || "").trim().toLowerCase() === GALAXY_API_MODES.NEW
+        ? GALAXY_API_MODES.NEW
+        : GALAXY_API_MODES.LEGACY;
+
+export const isNewGalaxyApi = (env = process.env) => galaxyApiMode(env) === GALAXY_API_MODES.NEW;
+
+const LEGACY_SMILEYS_UNKNOWN_USER_CODE = "ERR-SMY-002";
+
 export const SMILEYS_STATUS = {
     OK: "ok",
     USER_UNKNOWN: "userUnknown",
@@ -52,10 +66,15 @@ export const readGalaxyCallback = (search) => {
     };
 };
 
-export const smileysArgs = (user) => ({
-    uuid: user?.suid,
-    salesforceAccountId: user?.sfuid || undefined,
-});
+export const legacySsoToken = (search) => (search || "").split("?token=")[1];
+
+export const smileysArgs = (user, env = process.env) =>
+    isNewGalaxyApi(env)
+        ? {uuid: user?.suid, salesforceAccountId: user?.sfuid || undefined}
+        : {uuid: user?.suid};
+
+export const orderSmileysAccount = (user, labClient, env = process.env) =>
+    isNewGalaxyApi(env) ? {salesforceAccountId: labClient ? undefined : user?.sfuid} : {};
 
 export const smileysPath = ({uuid, salesforceAccountId}) =>
     salesforceAccountId
@@ -67,7 +86,17 @@ export const isSmileysUnavailable = (data) =>
 
 const galaxyCode = (value) => value?.data?.code ?? value?.code;
 
-export const smileysStatus = ({data, error} = {}) => {
+const legacySmileysStatus = ({data, error}) => {
+    if (error || !data) {
+        return SMILEYS_STATUS.ERROR;
+    }
+    return data.code === LEGACY_SMILEYS_UNKNOWN_USER_CODE ? SMILEYS_STATUS.USER_UNKNOWN : SMILEYS_STATUS.OK;
+};
+
+export const smileysStatus = ({data, error} = {}, env = process.env) => {
+    if (!isNewGalaxyApi(env)) {
+        return legacySmileysStatus({data, error});
+    }
     if (error) {
         return SMILEYS_CODE_STATUS[galaxyCode(error)] || SMILEYS_STATUS.ERROR;
     }
@@ -79,7 +108,10 @@ export const smileysStatus = ({data, error} = {}) => {
 
 export const smileysMessageKey = (status) => SMILEYS_STATUS_MESSAGE[status] || null;
 
-export const loginFailureKey = (failure) => {
+export const loginFailureKey = (failure, env = process.env) => {
+    if (!isNewGalaxyApi(env)) {
+        return "login.invalidCredentials";
+    }
     const code = galaxyCode(failure);
     if (PARTNER_REFUSAL_CODES.includes(code)) {
         return "login.galaxyUnavailable";

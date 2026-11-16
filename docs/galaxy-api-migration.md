@@ -11,6 +11,15 @@ L'ancienne LaGalaxy (SSO `ssogalaxy`, API Symfony `api-galaxy`) est remplacée p
 
 Les helpers Galaxy du front sont regroupés dans `src/common/utils/galaxy.js`. Les appels HTTP restent dans les services RTK existants (`lumenApi`, `x3Api`).
 
+## Mode legacy / new
+
+Le front ne parle pas à galaxy-api : il parle au back e-shop, mais la forme des appels dépend du mode du back. `REACT_APP_GALAXY_API_MODE` (lu au build par CRA, résolu par `galaxyApiMode()` / `isNewGalaxyApi()` dans `src/common/utils/galaxy.js`) suit donc le `GALAXY_API_MODE` du back :
+
+- `legacy` (**défaut** : valeur absente, vide ou inconnue) : mêmes appels que `main`. `/login-sso` envoie `{token}` lu tel quel dans `?token=` et n'appelle jamais `galaxy/login-url` ; `getSmileys/{suid}` sans `salesforceAccountId` ; `post-order` sans `salesforceAccountId` ; lecture du corps legacy `smileys/total` (`ERR-SMY-002` = utilisateur Galaxy non reconnu) ; tout échec de connexion affiche « identifiants invalides ». Seule différence gardée : un échec de `getSmileys` affiche « Aucun Smileys » au lieu de planter la page (`<div>{error}</div>` sur un objet RTK, corrigé par `c1f0d91`) ;
+- `new` (valeur explicite) : le comportement décrit ci-dessous.
+
+La branche peut donc être fusionnée et déployée avant le cutover sans changer le comportement. Le mode du front doit être `new` seulement quand le back l'est aussi.
+
 ## Correspondance des appels
 
 | Fichier | Avant | Après | Auth | Changement |
@@ -44,10 +53,11 @@ Le front envoie toujours `salesforceAccountId = user.sfuid` quand il le connaît
 
 ## Variables d'environnement
 
-Variables lues au build par CRA. Le script les écrit dans `.env.local`, qui est ignoré par git :
+Variables lues au build par CRA (sur Railway : variables du service, prises en compte au prochain build). Le script les écrit dans `.env.local`, qui est ignoré par git :
 
 | Variable | Défaut | Rôle |
 |---|---|---|
+| `REACT_APP_GALAXY_API_MODE` | `legacy` | `legacy` (défaut, valeur absente ou vide) = appels de `main` ; `new` = nouvelles routes du back, à poser au cutover |
 | `REACT_APP_GALAXY_FRONT_URL` | `https://www.biotechgalaxy.com/` | lien « LaGalaxy Biotech Dental » |
 | `REACT_APP_INVOICE_PDF_BASE_URL` | `https://api-galaxy.biotech-dental.com/api/factureGalaxyPdf` | base des PDF de factures |
 
@@ -74,6 +84,8 @@ ON DUPLICATE KEY UPDATE `scopes` = VALUES(`scopes`), `userAccess` = VALUES(`user
 
 ```bash
 scripts/setup-galaxy-api.sh                    # interactif
+scripts/setup-galaxy-api.sh --non-interactive --mode new      # cutover
+scripts/setup-galaxy-api.sh --non-interactive --mode legacy   # rollback
 scripts/setup-galaxy-api.sh --non-interactive \
   --eshop-api-url https://eshopbd-back-production.up.railway.app/api \
   --galaxy-api-url https://01.api.new-recette.biotechgalaxy.secure4all.tech \
@@ -84,33 +96,30 @@ echo "$SECRET" | scripts/setup-galaxy-api.sh --client-secret-stdin   # valide au
 Le script :
 
 1. vérifie `node` et `curl` ;
-2. met à jour `.env.local` (idempotent) ;
+2. met à jour `.env.local` (idempotent), avec `REACT_APP_GALAXY_API_MODE=legacy` par défaut ;
 3. vérifie le realm Keycloak `s4a` (découverte OIDC) et, si un secret est fourni sur stdin, obtient un token `client_credentials` ;
 4. appelle `GET /health` de galaxy-api ;
-5. vérifie que le back renvoie une URL de connexion Keycloak (`GET /api/galaxy/login-url`) ;
+5. en mode `new` seulement, vérifie que le back renvoie une URL de connexion Keycloak (`GET /api/galaxy/login-url`) ;
 6. affiche un récapitulatif OK/KO.
 
 ## Ordre de déploiement
 
 1. galaxy-api : version avec `partner_client` déployée (validée à `6e6fc05`), ligne `partner_client` insérée ;
 2. client Keycloak `biotech-dental-eshop` configuré ;
-3. back e-shop `feat/galaxy-api-new-routes` déployé, script lancé, `GALAXY_API_ENABLED=true` ;
-4. ce front (`feat/galaxy-api-new-routes`) ;
+3. back e-shop `feat/galaxy-api-new-routes` et ce front fusionnés et déployés à l'avance, en `legacy` (aucune variable à poser) : rien ne change ;
+4. cutover : `GALAXY_API_MODE=new` sur le back puis redéploiement, puis `REACT_APP_GALAXY_API_MODE=new` sur le front puis nouveau build et redéploiement. Aucun changement de code ;
 5. galaxy-front : rien à faire, la planète `biotech` est déjà en stratégie `KEYCLOAK` vers `/login-sso`.
 
 ## Rollback
 
-Le rollback se fait sur le back : `GALAXY_API_ENABLED=false`. Le front reste compatible :
+Remettre `REACT_APP_GALAXY_API_MODE=legacy` (ou supprimer la variable) sur le front puis reconstruire et redéployer, et `GALAXY_API_MODE=legacy` sur le back puis redéployer. Le front retrouve exactement les appels de `main`.
 
-- `/login-sso?token=…` envoie `{token}`, comme avant ;
-- le paramètre `salesforceAccountId` est ignoré par le chemin legacy.
-
-Seule l'entrée `/login-sso` sans paramètre renvoie vers `/login`, car `galaxy/login-url` répond 404 quand le flag est coupé. Pour revenir aussi au front précédent, redéployer `origin/main`.
+Si seul le back repasse en `legacy`, un front resté en `new` reste compatible pour `/login-sso?token=…` (envoyé tel quel) et `salesforceAccountId` (ignoré par le back legacy), mais l'entrée `/login-sso` sans paramètre renvoie vers `/login` (`galaxy/login-url` répond 404) et le solde legacy n'est pas lu : repasser les deux.
 
 ## Tests
 
-- `CI=true npm test -- --watchAll=false` : tests de `src/common/utils/galaxy.test.js` (lecture du retour Keycloak, construction des URLs, scoping du solde, codes d'erreur) et tests de contrat `src/common/utils/galaxy.contract.test.js`.
-- Tests de contrat seuls : `CI=true npx react-scripts test --watchAll=false galaxy.contract`. Ils rejouent les réponses du back enregistrées dans `src/common/utils/__fixtures__/eshop-back-galaxy-responses.json` (back `feat/galaxy-api-new-routes` au commit `1a0733a`, cas de `tests/GalaxyApiContractTest.php`, qui rejoue lui-même galaxy-api `6e6fc05`), telles que RTK Query les présente (`data` en 2xx, `error: {status, data}` sinon), et vérifient le statut, le message fr/en, et que chaque code du back est connu du front. Si le back ajoute un code, mettre à jour la fixture et `galaxy.js`.
+- `CI=true npm test -- --watchAll=false` : tests du mode (`legacy` par défaut, `new` seulement explicite) et des appels legacy / new dans `src/common/utils/galaxy.test.js` et `src/features/auth/LoginSSO.test.js` (`{token}` sans `galaxy/login-url` en legacy, `galaxy/login-url` puis `{code, state}` en new), tests de `src/common/utils/galaxy.test.js` (lecture du retour Keycloak, construction des URLs, scoping du solde, codes d'erreur) et tests de contrat `src/common/utils/galaxy.contract.test.js`.
+- Tests de contrat seuls : `CI=true npx react-scripts test --watchAll=false galaxy.contract`. Ils sont lancés en mode `new` et rejouent les réponses du back enregistrées dans `src/common/utils/__fixtures__/eshop-back-galaxy-responses.json` (back `feat/galaxy-api-new-routes` au commit `1a0733a`, cas de `tests/GalaxyApiContractTest.php`, qui rejoue lui-même galaxy-api `6e6fc05`), telles que RTK Query les présente (`data` en 2xx, `error: {status, data}` sinon), et vérifient le statut, le message fr/en, et que chaque code du back est connu du front. Si le back ajoute un code, mettre à jour la fixture et `galaxy.js`.
 - `npm run build`.
 - Recette manuelle : planète Biotech Dental depuis galaxy-front, connexion par `/login`, solde et débit de smileys au checkout, téléchargement d'une facture.
 

@@ -6,6 +6,7 @@ ROOT_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 ENV_FILE="${ROOT_DIR}/.env.local"
 INTERACTIVE=1
 
+MODE="${REACT_APP_GALAXY_API_MODE:-}"
 GALAXY_FRONT_URL="${REACT_APP_GALAXY_FRONT_URL:-}"
 INVOICE_PDF_BASE_URL="${REACT_APP_INVOICE_PDF_BASE_URL:-}"
 ESHOP_API_URL="${ESHOP_API_URL:-https://api.shop.biotech-dental.com/api}"
@@ -24,6 +25,7 @@ realm, galaxy-api and the e-shop back login wiring.
 
 Options:
   --env-file PATH          file to update (default: ./.env.local, git-ignored)
+  --mode legacy|new        REACT_APP_GALAXY_API_MODE (default: legacy; cutover: new, rollback: legacy)
   --galaxy-front-url URL   REACT_APP_GALAXY_FRONT_URL
   --invoice-pdf-url URL    REACT_APP_INVOICE_PDF_BASE_URL
   --eshop-api-url URL      e-shop back API base (default: https://api.shop.biotech-dental.com/api)
@@ -40,6 +42,7 @@ USAGE
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --env-file) ENV_FILE="$2"; shift 2 ;;
+    --mode) MODE="$2"; shift 2 ;;
     --galaxy-front-url) GALAXY_FRONT_URL="$2"; shift 2 ;;
     --invoice-pdf-url) INVOICE_PDF_BASE_URL="$2"; shift 2 ;;
     --eshop-api-url) ESHOP_API_URL="$2"; shift 2 ;;
@@ -141,11 +144,18 @@ json_field() {
   '
 }
 
+MODE="$(ask REACT_APP_GALAXY_API_MODE "${MODE}" "legacy")"
+MODE="$(printf '%s' "${MODE}" | tr '[:upper:]' '[:lower:]' | tr -d '[:space:]')"
+if [[ "${MODE}" != "new" && "${MODE}" != "legacy" ]]; then
+  record KO "REACT_APP_GALAXY_API_MODE must be legacy or new (got: ${MODE})"
+  exit 1
+fi
+set_env REACT_APP_GALAXY_API_MODE "${MODE}"
 GALAXY_FRONT_URL="$(ask REACT_APP_GALAXY_FRONT_URL "${GALAXY_FRONT_URL}" "https://www.biotechgalaxy.com/")"
 INVOICE_PDF_BASE_URL="$(ask REACT_APP_INVOICE_PDF_BASE_URL "${INVOICE_PDF_BASE_URL}" "https://api-galaxy.biotech-dental.com/api/factureGalaxyPdf")"
 set_env REACT_APP_GALAXY_FRONT_URL "${GALAXY_FRONT_URL}"
 set_env REACT_APP_INVOICE_PDF_BASE_URL "${INVOICE_PDF_BASE_URL%/}"
-record OK "${ENV_FILE} updated"
+record OK "${ENV_FILE} updated (REACT_APP_GALAXY_API_MODE=${MODE})"
 
 DISCOVERY="$(curl -sS --max-time 20 "${KEYCLOAK_URL%/}/realms/${REALM}/.well-known/openid-configuration" || true)"
 if [[ -n "$(printf '%s' "${DISCOVERY}" | json_field authorization_endpoint)" ]]; then
@@ -176,12 +186,16 @@ else
   record KO "galaxy-api health check failed on ${GALAXY_API_URL%/}/health"
 fi
 
-LOGIN_URL="$(curl -sS --max-time 20 "${ESHOP_API_URL%/}/galaxy/login-url" || true)"
-AUTHORIZE="$(printf '%s' "${LOGIN_URL}" | json_field url)"
-if [[ "${AUTHORIZE}" == "${KEYCLOAK_URL%/}/realms/${REALM}/protocol/openid-connect/auth?"* ]]; then
-  record OK "e-shop back issues Keycloak login URLs (${ESHOP_API_URL%/}/galaxy/login-url)"
+if [[ "${MODE}" == "new" ]]; then
+  LOGIN_URL="$(curl -sS --max-time 20 "${ESHOP_API_URL%/}/galaxy/login-url" || true)"
+  AUTHORIZE="$(printf '%s' "${LOGIN_URL}" | json_field url)"
+  if [[ "${AUTHORIZE}" == "${KEYCLOAK_URL%/}/realms/${REALM}/protocol/openid-connect/auth?"* ]]; then
+    record OK "e-shop back issues Keycloak login URLs (${ESHOP_API_URL%/}/galaxy/login-url)"
+  else
+    record KO "e-shop back login URL missing or not on ${KEYCLOAK_URL%/} (is GALAXY_API_MODE=new on the back?)"
+  fi
 else
-  record KO "e-shop back login URL missing or not on ${KEYCLOAK_URL%/} (is GALAXY_API_ENABLED=true on the back?)"
+  record OK "legacy mode: the front keeps the ?token= SSO flow, back login URL check skipped"
 fi
 
 [[ "${FAILED}" -eq 0 ]]

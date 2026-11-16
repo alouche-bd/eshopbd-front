@@ -8,7 +8,7 @@ import {clearCart, clearShippingAddress} from "../cart/cartSlice";
 import {clearWishlist} from "../wishlist/wishlistSlice";
 import {defaultRouteForUser} from "../../common/constants/userTypes";
 import {setLanguageFromUser} from "../../i18n";
-import {loginFailureKey, readGalaxyCallback} from "../../common/utils/galaxy";
+import {isNewGalaxyApi, legacySsoToken, loginFailureKey, readGalaxyCallback} from "../../common/utils/galaxy";
 import toast from "react-hot-toast";
 
 const LoginSSO = () => {
@@ -22,6 +22,34 @@ const LoginSSO = () => {
     const {push} = useHistory();
 
     useEffect(() => {
+        const signIn = (payload) => {
+            dispatch(clearShippingAddress());
+            dispatch(clearCart());
+            dispatch(clearWishlist());
+            // Switch UI language based on Sage billing country and
+            // route distributors / ADV_INTER users to their dedicated
+            // landing page (spec §4, §16).
+            setLanguageFromUser(payload.user);
+            push(defaultRouteForUser(payload.user));
+        };
+
+        if (!isNewGalaxyApi()) {
+            login({
+                token: legacySsoToken(search)
+            })
+                .unwrap()
+                .then((payload) => {
+                    if (payload.success === 1) {
+                        signIn(payload);
+                    }
+                })
+                .catch(() => {
+                    push("/login")
+                    toast.error(t("login.invalidCredentials"));
+                });
+            return;
+        }
+
         const fail = (failure) => {
             push("/login")
             toast.error(t(loginFailureKey(failure)));
@@ -45,14 +73,7 @@ const LoginSSO = () => {
             .unwrap()
             .then((payload) => {
                 if (payload.success === 1) {
-                    dispatch(clearShippingAddress());
-                    dispatch(clearCart());
-                    dispatch(clearWishlist());
-                    // Switch UI language based on Sage billing country and
-                    // route distributors / ADV_INTER users to their dedicated
-                    // landing page (spec §4, §16).
-                    setLanguageFromUser(payload.user);
-                    push(defaultRouteForUser(payload.user));
+                    signIn(payload);
                 } else {
                     fail(payload);
                 }

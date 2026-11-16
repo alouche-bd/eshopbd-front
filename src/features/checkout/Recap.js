@@ -23,6 +23,7 @@ import SelectAddress from "./SelectAddress";
 import Smileys from "./Smileys";
 import logoBd from "../../assets/img/logos/hexagone_blanc.png";
 import {PRODUCT_IMG_BASE} from "../../common/utils/apiConstants";
+import {orderSmileysAccount} from "../../common/utils/galaxy";
 
 
 const Recap = () => {
@@ -125,7 +126,7 @@ const Recap = () => {
         }),
         smileyamount: cart.discount,
         uuid: labClient ? labClient.suid : user.suid,
-        salesforceAccountId: labClient ? undefined : user.sfuid
+        ...orderSmileysAccount(user, labClient)
     }
 
     const orderToSend = {
