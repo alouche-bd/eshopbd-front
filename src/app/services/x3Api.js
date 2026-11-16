@@ -1,6 +1,7 @@
 import {createApi, fetchBaseQuery} from "@reduxjs/toolkit/query/react";
 import {ROOT_URL_LUMEN} from "../../common/utils/apiConstants";
 import {returnNewDesignation} from "../../common/utils/designations";
+import {smileysPath} from "../../common/utils/galaxy";
 
 export const x3Api = createApi({
     reducerPath: "x3Api",
@@ -61,8 +62,7 @@ export const x3Api = createApi({
             keepUnusedDataFor: 3600,
         }),
         getSmileys: build.query({
-            query: (uuid) =>
-                `getSmileys/${uuid}`,
+            query: smileysPath,
         }),
         postConsumeSmileys: build.mutation({
             query(body) {

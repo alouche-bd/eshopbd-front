@@ -27,6 +27,7 @@ import CartOverlay from "./elements/CartOverlay";
 import WishlistOverlay from "./elements/WishlistOverlay";
 import ProductsSearch from "../../../features/products/ProductsSearch";
 import NewCatalogue from "./elements/NewCatalogue";
+import {galaxyFrontUrl} from "../../utils/galaxy";
 
 const Header = () => {
     const location = useLocation();
@@ -141,7 +142,7 @@ const Header = () => {
                             </div>
                             <div className="header-top__right" style={{display: "flex", alignItems: "center", gap: 16}}>
                                 <LanguageSwitcher/>
-                                <a href="https://www.biotechgalaxy.com/">
+                                <a href={galaxyFrontUrl()}>
                                     LaGalaxy Biotech Dental
                                 </a>
                             </div>

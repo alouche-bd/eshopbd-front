@@ -3,12 +3,13 @@ import React from "react";
 import SaveIcon from "@mui/icons-material/Save";
 import {useSelector} from "react-redux";
 import {authSelector} from "../../../features/auth/authSlice";
+import {invoicePdfUrl} from "../../utils/galaxy";
 
 const DownloadBillCell = ({id}) => {
     const {user} = useSelector(authSelector);
     return (
         <>
-            <a href={`https://api-galaxy.biotech-dental.com/api/factureGalaxyPdf/${user.sfuid}/${id}`} target="_blank" rel="noreferrer">
+            <a href={invoicePdfUrl(user.sfuid, id)} target="_blank" rel="noreferrer">
                 <Fab
                     size="small"
                     aria-label="save"

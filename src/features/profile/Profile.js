@@ -8,6 +8,7 @@ import {useTranslation} from "react-i18next";
 import {authSelector} from "../auth/authSlice";
 import styles from "./profile.module.css";
 import {useGetSmileysQuery} from "../../app/services/x3Api";
+import {SMILEYS_STATUS, isNewGalaxyApi, smileysArgs, smileysMessageKey, smileysStatus} from "../../common/utils/galaxy";
 import Spinner from "../../common/components/spinner/Spinner";
 
 const Profile = () => {
@@ -22,10 +23,16 @@ const Profile = () => {
 
     const {user} = useSelector(authSelector);
 
-    const {data, isFetching, isError, error} = useGetSmileysQuery(user.suid);
+    const {data, isFetching, isError, error} = useGetSmileysQuery(smileysArgs(user));
 
     if (isFetching) return <Spinner/>;
-    if (isError) return <div>{error}</div>;
+
+    const status = smileysStatus({data, error: isError ? error : undefined});
+    const galaxyApiSmileysText = status === SMILEYS_STATUS.OK
+        ? data.result
+        : (status === SMILEYS_STATUS.ERROR ? t("profile.account.noSmileys") : t(smileysMessageKey(status)));
+    const legacySmileysText = data && !isError ? data.result : t("profile.account.noSmileys");
+    const smileysText = isNewGalaxyApi() ? galaxyApiSmileysText : legacySmileysText;
 
     return (
         <Box sx={{flexGrow: 1}} bgcolor="#f7f7f7" p={3}>
@@ -44,7 +51,7 @@ const Profile = () => {
                 <Grid item md={6}>
                     <Item>
                         <h4 className="mb-4">{t("profile.account.sectionSmileys").toUpperCase()}</h4>
-                        <Typography>{data ? data.result : t("profile.account.noSmileys")}</Typography>
+                        <Typography>{smileysText}</Typography>
                     </Item>
                 </Grid>
             </Grid>
